@@ -18,7 +18,8 @@ RUN pip3 install -r /requirements.txt
 WORKDIR /root
 COPY * ./
 COPY model model
-COPY *.sh .
+COPY train_ner.sh .
+COPY eval_ner.sh .
 
 
 CMD /bin/sh
