@@ -18,6 +18,7 @@ RUN pip3 install -r /requirements.txt
 WORKDIR /root
 COPY * ./
 COPY model model
+COPY *.sh .
 
 
 CMD /bin/sh
