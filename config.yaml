@@ -2,8 +2,8 @@ title: Pytorch LM-LSTM-CRF Ner config for Acharya
 Owner: Liyuan Lucas Liu
 author: Vimal Menon
 cmd:
-        train: train_ner.sh
-        eval: eval_ner.sh
+        train: /root/train_ner.sh
+        eval: /root/eval_ner.sh
         type: pipe
         in: file
         out: stdout
