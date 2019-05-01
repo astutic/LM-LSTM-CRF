@@ -5,6 +5,6 @@ cmd:
         #eval: python3 seq_wc.py --load_arg checkpoint/ner/ner_4_cwlm_lstm_crf.json --load_check_point checkpoint/ner_ner_4_cwlm_lstm_crf.model --gpu 0 --input_file ./data/ner2003/test.txt --output_file output.txt
         train: train_ner.sh
         eval: eval_ner.sh
-        type: file
+        type: pipe
         in: file
-        out: file
+        out: stdout
