@@ -25,6 +25,7 @@ def eprint(*args, **kwargs):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Learning with LM-LSTM-CRF together with Language Model')
     parser.add_argument('--rand_embedding', action='store_true', help='random initialize word embedding')
+    parser.add_argument('--evaluate', action='store_true', help='Set true for evaluation')
     parser.add_argument('--emb_file', default='./embedding/glove.6B.100d.txt', help='path to pre-trained embedding')
     parser.add_argument('--train_file', default='./data/ner/eng.train.iobes', help='path to training file')
     parser.add_argument('--dev_file', default='./data/ner/eng.testa.iobes', help='path to development file')
@@ -73,13 +74,14 @@ if __name__ == "__main__":
     print('loading corpus')
     with codecs.open(args.train_file, 'r', 'utf-8') as f:
         lines = f.readlines()
-    with codecs.open(args.dev_file, 'r', 'utf-8') as f:
-        dev_lines = f.readlines()
-    with codecs.open(args.test_file, 'r', 'utf-8') as f:
-        test_lines = f.readlines()
+    if args.evaluate:
+        with codecs.open(args.dev_file, 'r', 'utf-8') as f:
+            dev_lines = f.readlines()
+        with codecs.open(args.test_file, 'r', 'utf-8') as f:
+            test_lines = f.readlines()
 
-    dev_features, dev_labels = utils.read_corpus(dev_lines)
-    test_features, test_labels = utils.read_corpus(test_lines)
+        dev_features, dev_labels = utils.read_corpus(dev_lines)
+        test_features, test_labels = utils.read_corpus(test_lines)
 
     if args.load_check_point:
         if os.path.isfile(args.load_check_point):
@@ -115,21 +117,23 @@ if __name__ == "__main__":
             f_map, embedding_tensor, in_doc_words = utils.load_embedding_wlm(args.emb_file, ' ', f_map, dt_f_set, args.caseless, args.unk, args.word_dim, shrink_to_corpus=args.shrink_embedding)
             print("embedding size: '{}'".format(len(f_map)))
 
-        l_set = functools.reduce(lambda x, y: x | y, map(lambda t: set(t), dev_labels))
-        l_set = functools.reduce(lambda x, y: x | y, map(lambda t: set(t), test_labels), l_set)
-        for label in l_set:
-            if label not in l_map:
-                l_map[label] = len(l_map)
+        if args.evaluate:
+            l_set = functools.reduce(lambda x, y: x | y, map(lambda t: set(t), dev_labels))
+            l_set = functools.reduce(lambda x, y: x | y, map(lambda t: set(t), test_labels), l_set)
+            for label in l_set:
+                if label not in l_map:
+                    l_map[label] = len(l_map)
     
     print('constructing dataset')
     # construct dataset
     dataset, forw_corp, back_corp = utils.construct_bucket_mean_vb_wc(train_features, train_labels, l_map, c_map, f_map, args.caseless)
-    dev_dataset, forw_dev, back_dev = utils.construct_bucket_mean_vb_wc(dev_features, dev_labels, l_map, c_map, f_map, args.caseless)
-    test_dataset, forw_test, back_test = utils.construct_bucket_mean_vb_wc(test_features, test_labels, l_map, c_map, f_map, args.caseless)
     
     dataset_loader = [torch.utils.data.DataLoader(tup, args.batch_size, shuffle=True, drop_last=False) for tup in dataset]
-    dev_dataset_loader = [torch.utils.data.DataLoader(tup, 50, shuffle=False, drop_last=False) for tup in dev_dataset]
-    test_dataset_loader = [torch.utils.data.DataLoader(tup, 50, shuffle=False, drop_last=False) for tup in test_dataset]
+    if args.evaluate:
+        dev_dataset, forw_dev, back_dev = utils.construct_bucket_mean_vb_wc(dev_features, dev_labels, l_map, c_map, f_map, args.caseless)
+        test_dataset, forw_test, back_test = utils.construct_bucket_mean_vb_wc(test_features, test_labels, l_map, c_map, f_map, args.caseless)
+        dev_dataset_loader = [torch.utils.data.DataLoader(tup, 50, shuffle=False, drop_last=False) for tup in dev_dataset]
+        test_dataset_loader = [torch.utils.data.DataLoader(tup, 50, shuffle=False, drop_last=False) for tup in test_dataset]
 
     # build model
     print('building model')
@@ -208,7 +212,7 @@ if __name__ == "__main__":
 
         # eval & save check_point
 
-        if 'f' in args.eva_matrix:
+        if args.evaluate and 'f' in args.eva_matrix:
             dev_result = evaluator.calc_score(ner_model, dev_dataset_loader)
             for label, (dev_f1, dev_pre, dev_rec, dev_acc, msg) in dev_result.items():
                 print('DEV : %s : dev_f1: %.4f dev_rec: %.4f dev_pre: %.4f dev_acc: %.4f | %s\n' % (label, dev_f1, dev_rec, dev_pre, dev_acc, msg))
@@ -260,7 +264,7 @@ if __name__ == "__main__":
                        dev_acc))
                 track_list.append({'loss': epoch_loss, 'dev_f1': dev_f1, 'dev_acc': dev_acc})
 
-        else:
+        elif args.evaluate:
 
             dev_acc = evaluator.calc_score(ner_model, dev_dataset_loader)
 
@@ -310,9 +314,9 @@ if __name__ == "__main__":
             break
 
     #print best
-    if 'f' in args.eva_matrix:
+    if args.evaluate and 'f' in args.eva_matrix:
         eprint(args.checkpoint + ' dev_f1: %.4f dev_rec: %.4f dev_pre: %.4f dev_acc: %.4f test_f1: %.4f test_rec: %.4f test_pre: %.4f test_acc: %.4f\n' % (dev_f1, dev_rec, dev_pre, dev_acc, test_f1, test_rec, test_pre, test_acc))
-    else:
+    elif args.evaluate:
         eprint(args.checkpoint + ' dev_acc: %.4f test_acc: %.4f\n' % (dev_acc, test_acc))
 
     # printing summary
