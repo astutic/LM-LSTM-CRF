@@ -7,6 +7,7 @@ RUN apk add -u python3 && \
 RUN apk add -u libc6-compat
 RUN apk add --virtual .build-deps gcc musl-dev g++
 RUN pip3 install cython
+RUN apk add -u zlib zlib-dev
 
 COPY requirements.txt /
 
