@@ -1,4 +1,4 @@
-From te_server:latest
+From te_server:test
 
 RUN apk add -u python3 && \
 	python3 -m ensurepip && \

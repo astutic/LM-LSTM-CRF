@@ -4,6 +4,6 @@ author: Vimal Menon
 cmd:
         train: /root/train_ner.sh
         eval: /root/eval_ner.sh
-        type: pipe
-        in: file
-        out: stdout
+        type: cmd
+        in: in_training.csv
+        out: output.txt
