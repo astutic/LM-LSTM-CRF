@@ -25,5 +25,4 @@ COPY eval_ner.sh .
 COPY debug.sh .
 RUN chmod +x /root/*.sh
 
-
 CMD /bin/sh
