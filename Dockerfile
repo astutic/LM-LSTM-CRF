@@ -16,14 +16,15 @@ From anibali/pytorch:no-cuda
 #RUN pip3 install --upgrade pip
 #RUN pip3 install --upgrade setuptools
 #RUN python3 -c "import platform; print(platform.python_version())"
-#RUN pip3 install -r /requirements.txt
+RUN pip install -r ~/requirements.txt
 
-WORKDIR /root
+RUN mkdir -p /home/user/tmp/root
+WORKDIR /home/user/root
 COPY * ./
 COPY model model
 COPY train_ner.sh .
 COPY eval_ner.sh .
 COPY debug.sh .
-RUN chmod +x /root/*.sh
+RUN sudo chmod +x *.sh
 
 CMD /bin/sh
