@@ -11,15 +11,15 @@ From anibali/pytorch:no-cuda
 #RUN apk add -u zlib zlib-dev
 #RUN apk add jpeg jpeg-dev
 #
-COPY requirements.txt ~/
 #
 #RUN pip3 install --upgrade pip
 #RUN pip3 install --upgrade setuptools
 #RUN python3 -c "import platform; print(platform.python_version())"
-RUN pip install -r ~/requirements.txt
 
-RUN mkdir -p /home/user/tmp/root
+RUN mkdir -p /home/user/root
 WORKDIR /home/user/root
+COPY requirements.txt ~/root
+RUN pip install -r ~/requirements.txt
 COPY * ./
 COPY model model
 COPY train_ner.sh .
