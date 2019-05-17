@@ -11,7 +11,7 @@ From anibali/pytorch:no-cuda
 #RUN apk add -u zlib zlib-dev
 #RUN apk add jpeg jpeg-dev
 #
-#COPY requirements.txt /
+COPY requirements.txt /~/
 #
 #RUN pip3 install --upgrade pip
 #RUN pip3 install --upgrade setuptools
