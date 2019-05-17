@@ -18,8 +18,8 @@ From anibali/pytorch:no-cuda
 
 RUN mkdir -p /home/user/root
 WORKDIR /home/user/root
-COPY requirements.txt ~/root
-RUN pip install -r ~/requirements.txt
+COPY requirements.txt ~/root/
+RUN pip install -r ~/root/requirements.txt
 COPY * ./
 COPY model model
 COPY train_ner.sh .
