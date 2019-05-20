@@ -26,5 +26,4 @@ COPY eval_ner.sh .
 COPY debug.sh .
 RUN sudo chmod +x *.sh
 
-
 CMD /bin/sh
