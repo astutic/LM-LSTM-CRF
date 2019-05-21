@@ -25,6 +25,6 @@ COPY train_ner.sh .
 COPY eval_ner.sh .
 COPY debug.sh .
 RUN sudo chmod +x *.sh
-RUN sudo chown -R /home/user/root
+RUN sudo chown -R user.user /home/user/root
 
 CMD /bin/sh
