@@ -1,3 +1,4 @@
+#!/bin/sh
 
 file=$(mktemp)
 cat - > $file

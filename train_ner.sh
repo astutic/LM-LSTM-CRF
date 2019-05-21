@@ -1,3 +1,4 @@
+#!/bin/sh
 
 file="training_data.tsv"
 cat - > $file
