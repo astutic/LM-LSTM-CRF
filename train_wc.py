@@ -306,6 +306,22 @@ if __name__ == "__main__":
                        args.start_epoch,
                        dev_acc))
                 track_list.append({'loss': epoch_loss, 'dev_acc': dev_acc})
+        else:
+                try:
+                    utils.save_checkpoint({
+                        'epoch': args.start_epoch,
+                        'state_dict': ner_model.state_dict(),
+                        'optimizer': optimizer.state_dict(),
+                        'f_map': f_map,
+                        'l_map': l_map,
+                        'c_map': c_map,
+                        'in_doc_words': in_doc_words
+                    }, {'track_list': track_list,
+                        'args': vars(args)
+                        }, args.checkpoint + 'cwlm_lstm_crf')
+                except Exception as inst:
+                    print(inst)
+
 
         print('epoch: ' + str(args.start_epoch) + '\t in ' + str(args.epoch) + ' take: ' + str(
             time.time() - start_time) + ' s')

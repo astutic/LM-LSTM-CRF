@@ -1,0 +1,13 @@
+title: Pytorch LM-LSTM-CRF Ner config for Acharya
+Owner: Liyuan Lucas Liu
+author: Vimal Menon
+train:
+        cmd: /home/user/root/train_ner_cuda.sh
+        type: cmd
+        input: stdin
+        output: stdout
+eval:
+        cmd: /home/user/root/eval_ner.sh
+        type: cmd
+        input: stdin
+        output: stdout
